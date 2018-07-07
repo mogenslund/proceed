@@ -56,7 +56,7 @@
 (defn task-component
   [task]
   (html
-    [:a {:href (str "/?task=" (task :id))} [:span {:class "task"} (task :name)]]))
+    [:a {:href (str "/?task=" (task :id)) :auto (task :name)} [:span {:class "task"} (task :name)]]))
 
 (defn task-matrix-component
   [tasks]
@@ -75,9 +75,9 @@
   [task]
   (html
     [:form
-      [:input {:type "text" :name (str "name" (task :id)) :value (task :name)}] 
-      [:input {:type "text" :name (str "description" (task :id)) :value (task :description)}] 
-      [:table {:style "display:inline"}
+      [:input {:type "text" :auto "taskname" :name (str "name" (task :id)) :value (task :name)}] 
+      [:input {:type "text" :auto "taskdescription" :name (str "description" (task :id)) :value (task :description)}] 
+      [:table {:style "display:inline" :auto "tasktable"}
         [:tr [:td {:bgcolor "#99cc00"}]
              [:td {:bgcolor "#cccccc"}]]
         [:tr [:td {:bgcolor "#cccccc"}]
