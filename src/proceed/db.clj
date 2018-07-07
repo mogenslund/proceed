@@ -16,8 +16,9 @@
        [:name :text]
        [:description :text]
        [:category :integer]
-       [:critical :integer]
-       [:urgent :integer]]))
+       [:important :integer]
+       [:urgent :integer]
+       [:done :integer]]))
   (db-do-commands @db
     (create-table-ddl
       :categories
@@ -26,13 +27,14 @@
        [:description :text]])))
 
 (defn create-task
-  [name description category critical urgent]
+  [name description category important urgent]
   (insert! @db :tasks
     {:name name
      :description description
      :category category
-     :critical critical
-     :urgent urgent}))
+     :important important
+     :urgent urgent
+     :done 0}))
 
 (defn read-task
   [id]
@@ -41,15 +43,17 @@
 (defn read-tasks
   []
   (query @db "select * from tasks"))
+  
 
 (defn update-task
-  [id name description category critical urgent]
+  [id name description category important urgent done]
   (update! @db :tasks
     {:name name
      :description description
      :category category
-     :critical critical
-     :urgent urgent}
+     :important important
+     :urgent urgent
+     :done done}
     ["id = ?" id]))
 
 (defn delete-task
@@ -90,6 +94,10 @@
   (create-tables)
   (create-category "home" "")
   (create-category "work" "")
+  (create-task "Buy bear" "Clean up inside out" 1 1 0)
+  (create-task "Make everyone happy" "" 1 0 0)
+  (create-task "Take out fire" "" 1 1 1)
+  (create-task "Watch soccer" "" 1 1 1)
   (create-task "Clean car" "Clean up inside out" 1 0 1))
 
 (defn set-db-file
