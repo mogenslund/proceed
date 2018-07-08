@@ -46,15 +46,11 @@
   
 
 (defn update-task
-  [id name description category important urgent done]
+  [id changes]
   (update! @db :tasks
-    {:name name
-     :description description
-     :category category
-     :important important
-     :urgent urgent
-     :done done}
+    changes
     ["id = ?" id]))
+   
 
 (defn delete-task
   [id]
