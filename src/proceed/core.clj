@@ -44,28 +44,56 @@
        :margin "6px"
        :padding "8px"
        :background-color "#aaaaaa"}]
+    [:.newbutton {
+       :background-color "#4CAF50"
+       :border "none"
+       :color "white"
+       :padding "2px 2px"
+       :text-align "center"
+       :text-decoration "none"
+       :display "inline-block"
+       :font-size "12px"}]
+    [:.movebutton {
+       :background-color "#008CBA"
+       :border "none"
+       :color "white"
+       :padding "2px 2px"
+       :text-align "center"
+       :text-decoration "none"
+       :display "inline-block"
+       :font-size "12px"}]
      ))
 
 (defn task-component
   [task]
   (html
-    [:a {:href (str "/?task=" (task :id)) :auto (task :name)} [:span {:class "task"} (task :name)]]))
+    [:a {:href (str "/?task=" (task :id)) :auto (task :name)} [:span {:class "task"} (str (task :name) " ")]]))
 
 (defn new-button
   [important urgent]
   (html
-    [:form {:action "/" :method :post}
+    [:form {:action "/" :method :post :style "display:inline;"}
       [:input {:type "hidden" :name "important" :value important}]
       [:input {:type "hidden" :name "urgent" :value urgent}]
-      [:input {:type "submit" :auto (str "new" important urgent) :value "New"}]]))
+      [:input {:type "submit" :class "newbutton" :auto (str "new" important urgent) :value "New"}]]))
 
 (defn move-button
   [important urgent]
   (html
-    [:form {:method :post}
+    [:form {:method :post :style "display:inline;"}
       [:input {:type "hidden" :name "moveimportant" :value important}]
       [:input {:type "hidden" :name "moveurgent" :value urgent}]
-      [:input {:type "submit" :auto (str "move" important urgent) :value "Move"}]]))
+      [:input {:type "submit" :class "movebutton" :auto (str "move" important urgent) :value "Move"}]]))
+
+(defn task-matrix-cell
+  [tasks important urgent color]
+  (html
+    [:td {:bgcolor color}
+      (map task-component (filter #(and (= (% :important) important) (= (% :urgent) urgent)) tasks))
+      [:br][:br][:br]
+      (new-button important urgent)
+      (move-button important urgent)]))
+
 
 (defn task-matrix-component
   [tasks]
@@ -73,37 +101,20 @@
     [:table {:class "main"}
       [:tr [:th] [:th "Important"] [:th "Not Important"]]
       [:tr [:th "Urgent"]
-           [:td {:bgcolor "#99cc00"}
-                (map task-component (filter #(and (= (% :important) 1) (= (% :urgent) 1)) tasks))
-                (new-button 1 1)
-                (move-button 1 1)]
-           [:td {:bgcolor "##36a4dd"}
-                (map task-component (filter #(and (= (% :important) 1) (= (% :urgent) 0)) tasks))
-                (new-button 1 0)
-                (move-button 1 0)]]
+             (task-matrix-cell tasks 1 1 "#99cc00")
+             (task-matrix-cell tasks 1 0 "#36a4dd")]
       [:tr [:th "Not Urgent"]
-           [:td {:bgcolor "#ff9f00"}
-                (map task-component (filter #(and (= (% :important) 0) (= (% :urgent) 1)) tasks))
-                (new-button 0 1)
-                (move-button 0 1)]
-           [:td {:bgcolor "#ff4d4e"}
-                (map task-component (filter #(and (= (% :important) 0) (= (% :urgent) 0)) tasks))
-                (new-button 0 0)
-                (move-button 0 0)]]]
-    ))
+             (task-matrix-cell tasks 0 1 "#ff9f00")
+             (task-matrix-cell tasks 0 0 "#ff4d4e")]]))
 
 (defn task-details-component
   [task]
   (html
+    [:br]
     [:form {:method "post"}
       [:input {:type "text" :auto "taskname" :name "taskname" :value (task :name)}] 
       [:input {:type "text" :auto "taskdescription" :name "taskdescription" :value (task :description)}] 
-      [:input {:type "submit" :value "Save"}]
-      [:table {:style "display:inline" :auto "tasktable"}
-        [:tr [:td {:bgcolor "#99cc00"}]
-             [:td {:bgcolor "#cccccc"}]]
-        [:tr [:td {:bgcolor "#cccccc"}]
-             [:td {:bgcolor "#cccccc"}]]]]))
+      [:input {:type "submit" :value "Save"}]]))
 
 (defn main-page
   [tasks taskid]
