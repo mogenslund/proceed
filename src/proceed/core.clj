@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [proceed.db :as db]
             [hiccup.core :refer :all]
+            [garden.core :refer [css]]
             [ring.middleware.params :refer :all]
             [org.httpkit.server :as server])
   (:gen-class))
@@ -10,48 +11,40 @@
 ;; (do (use 'proceed.db :reload) (use 'proceed.core :reload) (aaa) (def aaa (-main)))
 ;; (aaa) ; to stop
 
-(def css
-  (str
-    "\nbody {\n"
-    "  background-color: #fefefe;\n"
-    "  font-family: Arial, Helvetica, sans-serif;\n"
-    "  font-size: small;\n"
-    "}\n"
-    "h1, h2 {\n"
-    "  margin-top: 30px;\n"
-    "  margin-botton: 0px;\n"
-    "  color: #0085b6;\n"
-    "}\n"
-    "table.main {\n"
-    "  border-spacing: 1;\n"
-    "  width: 100%;\n"
-    "  height: 60%;\n"
-    "  font-size: small;\n"
-    "}\n"
-    "a {\n"
-    "  text-decoration: none;\n"
-    "}\n"
-    "td {\n"
-    "  padding: 8;\n"
-    "  width: 50%;\n"
-    "  height: 50%;\n"
-    "  text-align: left;\n"
-    "  vertical-align: top;\n"
-    "}\n"
-    "th {\n"
-    "  background-color: #dddddd;\n"
-    "  text-align: left;\n"
-    "  vertical-align: top;\n"
-    "}\n"
-    "tr {\n"
-    "  background-color: #ffffff;\n"
-    "}\n"
-    "span.task {\n"
-    "  margin: 6px;\n"
-    "  padding: 8px;\n"
-    "  background-color: #aaaaaa;\n"
-    "}\n"
-   ))
+(def styling
+  (css
+    [:body {
+       :background-color "#fefefe"
+       :font-family "Arial, Helvetica, sans-serif"
+       :font-size "small"}]
+    [:h1 :h2 {
+       :margin-top "30px"
+       :margin-botton "0px"
+       :color "#0085b6"}]
+    [:table.main {
+       :border-spacing 1
+       :width "100%"
+       :height "60%"
+       :font-size "small"}]
+    [:a {
+       :text-decoration "none"}]
+    [:td {
+       :padding 8
+       :width "50%"
+       :height "50%"
+       :text-align "left"
+       :vertical-align "top"}]
+    [:th {
+       :background-color "#dddddd"
+       :text-align "left"
+       :vertical-align "top"}]
+    [:tr {
+       :background-color "#ffffff"}]
+    [:span.task {
+       :margin "6px"
+       :padding "8px"
+       :background-color "#aaaaaa"}]
+     ))
 
 (defn task-component
   [task]
@@ -85,12 +78,11 @@
 
 (defn main-page
   [tasks taskid]
-  (println (pr-str taskid))
   (html
     [:html
       [:header
         [:meta {:content "text/html;charset=utf-8"}]
-        [:style css]]
+        [:style styling]]
       [:body
         [:h1 "Task Manager"]
         (task-matrix-component tasks)
@@ -104,9 +96,6 @@
         fparams (request :form-params)
         method (request :request-method)
         taskid (when (params "task") (Integer/parseInt (params "task")))]
-    (println "!!!!" (pr-str request))
-    (println "!!!!" params)
-    (println "!!!!" taskid)
     {:status 200 :headers {"content-type" "text/html"} :body (main-page (db/read-tasks) taskid)}))
   
 

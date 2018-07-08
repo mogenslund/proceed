@@ -94,7 +94,7 @@
   (create-tables)
   (create-category "home" "")
   (create-category "work" "")
-  (create-task "Buy bear" "Clean up inside out" 1 1 0)
+  (create-task "Buy beer" "" 1 1 0)
   (create-task "Make everyone happy" "" 1 0 0)
   (create-task "Take out fire" "" 1 1 1)
   (create-task "Watch soccer" "" 1 1 1)
