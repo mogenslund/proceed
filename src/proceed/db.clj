@@ -27,15 +27,16 @@
        [:description :text]])))
 
 (defn create-task
-  [name description category important urgent]
-  (insert! @db :tasks
-    {:name name
-     :description description
-     :category category
-     :important important
-     :urgent urgent
-     :done 0}))
-
+  [& data]
+  (let [defaults
+         {:name "New"
+          :description ""
+          :category 1
+          :important 1
+          :urgent 1
+          :done 0}]
+    (first (vals (first (insert! @db :tasks (merge defaults (apply hash-map data))))))))
+          
 (defn read-task
   [id]
   (first (query @db (str "select * from tasks where id=" id))))
@@ -46,9 +47,9 @@
   
 
 (defn update-task
-  [id changes]
+  [id & data]
   (update! @db :tasks
-    changes
+    (apply hash-map data)
     ["id = ?" id]))
    
 
@@ -58,10 +59,11 @@
     ["id = ?" id]))
 
 (defn create-category
-  [name description]
-  (insert! @db :categories
-    {:name name
-     :description description}))
+  [& data]
+  (let [defaults
+         {:name "New"
+          :description ""}]
+    (insert! @db :categories (merge defaults (apply hash-map data)))))
 
 (defn read-category
   [id]
@@ -72,10 +74,9 @@
   (query @db "select * from categories"))
 
 (defn update-category
-  [id name description]
+  [id & data]
   (update! @db :categories
-    {:name name
-     :description description}
+    (apply hash-map data)
     ["id = ?" id]))
 
 (defn delete-category
@@ -88,13 +89,13 @@
 (defn reset-db
   []
   (create-tables)
-  (create-category "home" "")
-  (create-category "work" "")
-  (create-task "Buy beer" "" 1 1 0)
-  (create-task "Make everyone happy" "" 1 0 0)
-  (create-task "Take out fire" "" 1 1 1)
-  (create-task "Watch soccer" "" 1 1 1)
-  (create-task "Clean car" "Clean up inside out" 1 0 1))
+  (create-category :name "home")
+  (create-category :name "work")
+  (create-task :name "Buy beer" :urgent 0)
+  (create-task :name "Make everyone happy")
+  (create-task :name "Take out fire")
+  (create-task :name "Watch soccer")
+  (create-task :name "Clean car" :description "Clean up inside out"))
 
 (defn set-db-file
   [filepath]
@@ -104,3 +105,4 @@
 ; (reset-db)
 ; (pr-str (read-tasks))
 ; (pr-str (read-categories))
+; (pr-str (create-task :name "Make everyone happy"))

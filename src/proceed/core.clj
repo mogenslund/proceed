@@ -109,12 +109,16 @@
 
 (defn task-details-component
   [task]
-  (html
-    [:br]
-    [:form {:method "post"}
-      [:input {:type "text" :auto "taskname" :name "taskname" :value (task :name)}] 
-      [:input {:type "text" :auto "taskdescription" :name "taskdescription" :value (task :description)}] 
-      [:input {:type "submit" :value "Save"}]]))
+  (when task
+    (html
+      [:br]
+      [:form {:method "post"}
+        [:input {:type "text" :auto "taskname" :name "taskname" :value (task :name)}] 
+        [:input {:type "text" :auto "taskdescription" :name "taskdescription" :value (task :description)}] 
+        [:input {:type "submit" :value "Save"}]]
+      [:form {:method "post"}
+        [:input {:type "hidden" :name "taskdelete" :value "delete"}]
+        [:input {:type "submit" :value "Delete"}]])))
 
 (defn main-page
   [tasks taskid]
@@ -141,13 +145,14 @@
         taskid (when (params "task") (Integer/parseInt (params "task")))]
     (reset! tmp-req (pr-str request))
     (when (= method :post)
-      (when (contains? fparams "taskname")
-        (db/update-task taskid {:name (fparams "taskname") :description (fparams "taskdescription")}))
-      (when (contains? fparams "important")
-        (db/create-task "New" "" 1 (fparams "important") (fparams "urgent")))
-      (when (contains? fparams "moveimportant")
-        (db/update-task taskid {:important (fparams "moveimportant") :urgent (fparams "moveurgent")}))
-    )
+      (cond (contains? fparams "taskdelete")
+              (db/delete-task taskid)
+            (contains? fparams "taskname")
+              (db/update-task taskid :name (fparams "taskname") :description (fparams "taskdescription"))
+            (contains? fparams "important")
+              (db/create-task :name "New" :important (fparams "important") :urgent (fparams "urgent"))
+            (contains? fparams "moveimportant")
+              (db/update-task taskid :important (fparams "moveimportant") :urgent (fparams "moveurgent"))))
     {:status 200
      :headers {"content-type" "text/html"}
      :body (main-page (db/read-tasks) taskid)}))
