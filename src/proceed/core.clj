@@ -16,7 +16,7 @@
     [:body {
        :background-color "#fefefe"
        :font-family "Arial, Helvetica, sans-serif"
-       :font-size "small"}]
+       :font-size "12px"}]
     [:h1 :h2 {
        :margin-top "30px"
        :margin-botton "0px"
@@ -44,30 +44,37 @@
        :margin "6px"
        :padding "8px"
        :background-color "#aaaaaa"}]
-    [:.newbutton {
-       :background-color "#4CAF50"
+    ["input[type='text']" {
+       :font-size "12px"}]
+    ["input[type='submit']" {
        :border "none"
        :color "white"
-       :padding "2px 2px"
+       :padding "2px 10px 2px 10px"
        :text-align "center"
        :text-decoration "none"
        :display "inline-block"
        :font-size "12px"}]
+    [:.greenbutton {
+       :background-color "#4CAF50"}]
+    [:.redbutton {
+       :background-color "#AA0000"}]
+    [:.taskbutton {
+       :background-color "#aaaaaa"}]
     [:.movebutton {
-       :background-color "#008CBA"
-       :border "none"
-       :color "white"
-       :padding "2px 2px"
-       :text-align "center"
-       :text-decoration "none"
-       :display "inline-block"
-       :font-size "12px"}]
-     ))
+       :background-color "#008CBA"}]
+    ))
 
 (defn task-component
   [task]
   (html
     [:a {:href (str "/?task=" (task :id)) :auto (task :name)} [:span {:class "task"} (str (task :name) " ")]]))
+
+(defn task-button
+  [task]
+  (html
+    [:form {:action "/" :style "display:inline;"}
+      [:input {:type "hidden" :name "task" :value (task :id)}]
+      " " [:input {:type "submit" :class "taskbutton" :auto (str "task" (task :id)) :value (task :name)}]]))
 
 (defn new-button
   [important urgent]
@@ -75,7 +82,7 @@
     [:form {:action "/" :method :post :style "display:inline;"}
       [:input {:type "hidden" :name "important" :value important}]
       [:input {:type "hidden" :name "urgent" :value urgent}]
-      [:input {:type "submit" :class "newbutton" :auto (str "new" important urgent) :value "New"}]]))
+      " " [:input {:type "submit" :class "greenbutton" :auto (str "new" important urgent) :value "New"}]]))
 
 (defn move-button
   [important urgent]
@@ -83,13 +90,13 @@
     [:form {:method :post :style "display:inline;"}
       [:input {:type "hidden" :name "moveimportant" :value important}]
       [:input {:type "hidden" :name "moveurgent" :value urgent}]
-      [:input {:type "submit" :class "movebutton" :auto (str "move" important urgent) :value "Move"}]]))
+      " " [:input {:type "submit" :class "movebutton" :auto (str "move" important urgent) :value "Move"}]]))
 
 (defn task-matrix-cell
   [tasks important urgent color]
   (html
     [:td {:bgcolor color}
-      (map task-component (filter #(and (= (% :important) important) (= (% :urgent) urgent)) tasks))
+      (map task-button (filter #(and (= (% :important) important) (= (% :urgent) urgent)) tasks))
       [:br][:br][:br]
       (new-button important urgent)
       (move-button important urgent)]))
@@ -112,13 +119,13 @@
   (when task
     (html
       [:br]
-      [:form {:method "post"}
+      [:form {:method "post"  :style "display:inline;"}
         [:input {:type "text" :auto "taskname" :name "taskname" :value (task :name)}] 
         [:input {:type "text" :auto "taskdescription" :name "taskdescription" :value (task :description)}] 
-        [:input {:type "submit" :value "Save"}]]
-      [:form {:method "post"}
+        " " [:input {:type "submit" :class "greenbutton" :value "Save"}]]
+      [:form {:method "post" :style "display:inline;"}
         [:input {:type "hidden" :name "taskdelete" :value "delete"}]
-        [:input {:type "submit" :value "Delete"}]])))
+        " " [:input {:type "submit" :class "redbutton" :value "Delete"}]])))
 
 (defn main-page
   [tasks taskid]
