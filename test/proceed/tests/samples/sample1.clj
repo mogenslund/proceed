@@ -13,8 +13,8 @@
   (set-retries 20)
   (new-browser)
   (goto main/page-entry)
-  (click main/main-link-task-fire)
-  (click main/main-link-task-beer)
-  (click main/main-link-task-fire)
+  (click main/main-button-task-fire)
+  (click main/main-button-task-beer)
+  (click main/main-button-task-fire)
   (quit))
 

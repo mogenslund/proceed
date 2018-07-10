@@ -64,17 +64,12 @@
        :background-color "#008CBA"}]
     ))
 
-(defn task-component
-  [task]
-  (html
-    [:a {:href (str "/?task=" (task :id)) :auto (task :name)} [:span {:class "task"} (str (task :name) " ")]]))
-
 (defn task-button
   [task]
   (html
     [:form {:action "/" :style "display:inline;"}
       [:input {:type "hidden" :name "task" :value (task :id)}]
-      " " [:input {:type "submit" :class "taskbutton" :auto (str "task" (task :id)) :value (task :name)}]]))
+      " " [:input {:type "submit" :class "taskbutton" :auto (task :name) :value (task :name)}]]))
 
 (defn new-button
   [important urgent]
@@ -122,7 +117,7 @@
       [:form {:method "post"  :style "display:inline;"}
         [:input {:type "text" :auto "taskname" :name "taskname" :value (task :name)}] 
         [:input {:type "text" :auto "taskdescription" :name "taskdescription" :value (task :description)}] 
-        " " [:input {:type "submit" :class "greenbutton" :value "Save"}]]
+        " " [:input {:type "submit" :auto "savetask" :class "greenbutton" :value "Save"}]]
       [:form {:method "post" :style "display:inline;"}
         [:input {:type "hidden" :name "taskdelete" :value "delete"}]
         " " [:input {:type "submit" :class "redbutton" :value "Delete"}]])))
