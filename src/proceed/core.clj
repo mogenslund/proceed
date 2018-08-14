@@ -69,7 +69,7 @@
   (html
     [:form {:action "/" :style "display:inline;"}
       [:input {:type "hidden" :name "task" :value (task :id)}]
-      " " [:input {:type "submit" :class "taskbutton" :auto (task :name) :value (task :name)}]]))
+      " " [:input {:type "submit" :taskid (task :id) :class "taskbutton" :auto (task :name) :value (task :name) :draggable "true" :ondragstart "drag(event)"}]]))
 
 (defn new-button
   [important urgent]
@@ -82,7 +82,7 @@
 (defn move-button
   [important urgent]
   (html
-    [:form {:method :post :style "display:inline;"}
+    [:form {:method :post :style "display:inline;" :id (str "move" important urgent)}
       [:input {:type "hidden" :name "moveimportant" :value important}]
       [:input {:type "hidden" :name "moveurgent" :value urgent}]
       " " [:input {:type "submit" :class "movebutton" :auto (str "move" important urgent) :value "Move"}]]))
@@ -90,7 +90,7 @@
 (defn task-matrix-cell
   [tasks important urgent color]
   (html
-    [:td {:bgcolor color}
+    [:td {:bgcolor color :ondrop "drop(event)" :ondragover "allowDrop(event)" :id (str "e" important urgent)}
       (map task-button (filter #(and (= (% :important) important) (= (% :urgent) urgent)) tasks))
       [:br][:br][:br]
       (new-button important urgent)
@@ -128,7 +128,19 @@
     [:html
       [:header
         [:meta {:content "text/html;charset=utf-8"}]
-        [:style styling]]
+        [:style styling]
+        [:script (str
+                   "function allowDrop(ev) {ev.preventDefault();}\n"
+                   "function drag(ev) {\n"
+                   "console.log(ev);\n"
+                   "  ev.dataTransfer.setData('taskid', ev.srcElement.attributes.taskid.value);\n"
+                   "}\n"
+                   "function drop(ev) {\n"
+                   "ev.preventDefault();\n"
+                   "var data = ev.dataTransfer.getData('taskid');\n"
+                   "    document.getElementById('mov' + ev.target.id).action = '/?task=' + data;"
+                   "    document.getElementById('mov' + ev.target.id).submit();"
+                   "}")]]
       [:body
         [:h1 "Task Manager"]
         (task-matrix-component tasks)
