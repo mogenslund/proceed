@@ -132,14 +132,13 @@
         [:script (str
                    "function allowDrop(ev) {ev.preventDefault();}\n"
                    "function drag(ev) {\n"
-                   "console.log(ev);\n"
-                   "  ev.dataTransfer.setData('taskid', ev.srcElement.attributes.taskid.value);\n"
+                   "  ev.dataTransfer.setData('text/plain', ev.srcElement.attributes.taskid.value);\n"
                    "}\n"
                    "function drop(ev) {\n"
-                   "ev.preventDefault();\n"
-                   "var data = ev.dataTransfer.getData('taskid');\n"
-                   "    document.getElementById('mov' + ev.target.id).action = '/?task=' + data;"
-                   "    document.getElementById('mov' + ev.target.id).submit();"
+                   "  ev.preventDefault();\n"
+                   "  var data = ev.dataTransfer.getData('text/plain');\n"
+                   "  document.getElementById('mov' + ev.target.id).action = '/?task=' + data;\n"
+                   "  document.getElementById('mov' + ev.target.id).submit();"
                    "}")]]
       [:body
         [:h1 "Task Manager"]
